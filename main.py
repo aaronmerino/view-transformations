@@ -30,7 +30,7 @@ class Scene:
 
         # Update the position of the cube
         for o in self.objects:
-            o.rotate_y_axis(np.pi/32)  
+            o.rotate_x_axis(np.pi/32)  
 
         self.render(canvas)
 

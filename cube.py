@@ -46,7 +46,18 @@ class Cube:
     return transformed_vertices
 
   def rotate_x_axis(self, deg):
-    return
+    M_rotate_x = np.array([[1,            0,            0, 0],
+                          [ 0,  np.cos(deg), -np.sin(deg), 0],
+                          [ 0,  np.sin(deg),  np.cos(deg), 0],
+                          [ 0,            0,            0, 1]])
+    
+    self.bas_x = np.dot(M_rotate_x, self.basis[0])      
+    self.bas_y = np.dot(M_rotate_x, self.basis[1])  
+    self.bas_z = np.dot(M_rotate_x, self.basis[2])  
+
+    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+
+    self.vertices = self._define_vertices()
   
   def rotate_y_axis(self, deg):
     M_rotate_y = np.array([[np.cos(deg),    0,     np.sin(deg), 0],
@@ -63,7 +74,18 @@ class Cube:
     self.vertices = self._define_vertices()
 
   def rotate_z_axis(self, deg):
-    return
+    M_rotate_z = np.array([[np.cos(deg), -np.sin(deg), 0, 0],
+                          [ np.sin(deg),  np.cos(deg), 0, 0],
+                          [           0,            0, 1, 0],
+                          [            0,           0, 0, 1]])
+    
+    self.bas_x = np.dot(M_rotate_z, self.basis[0])      
+    self.bas_y = np.dot(M_rotate_z, self.basis[1])  
+    self.bas_z = np.dot(M_rotate_z, self.basis[2])  
+
+    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+
+    self.vertices = self._define_vertices()
   
   def rotate_axis(self, vec, deg):
     return
