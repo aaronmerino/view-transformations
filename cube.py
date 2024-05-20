@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class Cube:
   def __init__(self, width=100, origin=np.array([0, 0, 0, 1])):
@@ -24,7 +25,6 @@ class Cube:
 
     # Define the 8 vertices
 
-    
     vertices[0] = self.origin + (self.basis[0]  + self.basis[1] + self.basis[2]) * (self.width - half_width)
     vertices[1] = self.origin + (self.basis[0]  + self.basis[1] - self.basis[2]) * (self.width - half_width)
 
@@ -49,7 +49,18 @@ class Cube:
     return
   
   def rotate_y_axis(self, deg):
-    return
+    M_rotate_y = np.array([[np.cos(deg),    0,     np.sin(deg), 0],
+                          [           0,    1,               0, 0],
+                          [-np.sin(deg),    0,     np.cos(deg), 0],
+                          [            0,   0,               0, 1]])
+    
+    self.bas_x = np.dot(M_rotate_y, self.basis[0])      
+    self.bas_y = np.dot(M_rotate_y, self.basis[1])  
+    self.bas_z = np.dot(M_rotate_y, self.basis[2])  
+
+    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+
+    self.vertices = self._define_vertices()
 
   def rotate_z_axis(self, deg):
     return

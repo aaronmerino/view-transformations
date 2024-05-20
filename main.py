@@ -24,6 +24,18 @@ class Scene:
           pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
           canvas.create_rectangle((i, j)*2, outline="", fill=pixel_color_hex)
 
+    def update(self, canvas):
+        # Clear the canvas
+        canvas.delete("all")
+
+        # Update the position of the cube
+        for o in self.objects:
+            o.rotate_y_axis(np.pi/32)  
+
+        self.render(canvas)
+
+        root.after(40, self.update, canvas)  # Update every 100 ms
+
             
 if __name__ == "__main__":
   camera = Camera(WIDTH, HEIGHT, 100, 100, -100, -400, np.array([0, 0, 0, 1]), np.array([0, 0, -1, 0]))
@@ -38,7 +50,7 @@ if __name__ == "__main__":
   canvas = Canvas(root, width=WIDTH, height=HEIGHT)
   canvas.pack(fill=BOTH, expand=1)
 
-  scene.render(canvas)
+  scene.update(canvas)
 
   root.mainloop()
 
