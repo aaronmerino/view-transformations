@@ -22,7 +22,7 @@ class Scene:
           j = v[1]/w
           # apply pixel_color to canvas at position (i, j)
           pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
-          canvas.create_rectangle((i, j)*2, outline="", fill=pixel_color_hex)
+          canvas.create_rectangle(i-2, j-2, i+2, j+2, outline="", fill=pixel_color_hex)
 
     def update(self, canvas):
         # Clear the canvas
