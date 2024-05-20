@@ -5,6 +5,9 @@ import math
 
 from tkinter import Tk, Canvas, Frame, BOTH
 
+WIDTH = 400
+HEIGHT = 400
+
 class Scene:
     def __init__(self, objects: list, camera: Camera):
        self.objects = objects
@@ -23,7 +26,7 @@ class Scene:
 
             
 if __name__ == "__main__":
-  camera = Camera()
+  camera = Camera(WIDTH, HEIGHT, 100, 100, -100, -400, np.array([0, 0, 0, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
   scene_objects.append(Cube(50, np.array([0, 0, -120, 1])))
