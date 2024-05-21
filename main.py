@@ -1,7 +1,8 @@
 from camera import Camera
 from cube import Cube
 import numpy as np
-import math
+import random
+
 
 from tkinter import Tk, Canvas, Frame, BOTH
 
@@ -25,16 +26,24 @@ class Scene:
           canvas.create_rectangle(i-2, j-2, i+2, j+2, outline="", fill=pixel_color_hex)
 
     def update(self, canvas):
-        # Clear the canvas
-        canvas.delete("all")
+      # Clear the canvas
+      canvas.delete("all")
 
-        # Update the position of the cube
-        for o in self.objects:
-            o.rotate_x_axis(np.pi/32)  
+      # Update the position of the cube
+      for o in self.objects:
+        # Generate a random number between the smallest and largest of your numbers
+        random_num = random.choice([1, 2, 3])
+        random_negative = random.choice([1, 1, 1, 1, 1, 1, 1, 1, -1])
+        if random_num == 1:
+          o.rotate_x_axis(random_negative*np.pi/64) 
+        elif random_num == 2:
+          o.rotate_y_axis(random_negative*np.pi/64) 
+        else:
+          o.rotate_z_axis(random_negative*np.pi/64) 
 
-        self.render(canvas)
+      self.render(canvas)
 
-        root.after(40, self.update, canvas)  # Update every 100 ms
+      root.after(40, self.update, canvas)  # Update every 100 ms
 
             
 if __name__ == "__main__":
