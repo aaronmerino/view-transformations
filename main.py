@@ -6,8 +6,8 @@ import random
 
 from tkinter import Tk, Canvas, Frame, BOTH
 
-WIDTH = 400
-HEIGHT = 400
+WIDTH = 800
+HEIGHT = 800
 
 class Scene:
     def __init__(self, objects: list, camera: Camera):
@@ -35,15 +35,15 @@ class Scene:
         random_num = random.choice([1, 2, 3])
         random_negative = random.choice([1, 1, 1, 1, 1, 1, 1, 1, -1])
         if random_num == 1:
-          o.rotate_x_axis(random_negative*np.pi/64) 
+          o.rotate_x_axis(random_negative*np.pi/256) 
         elif random_num == 2:
-          o.rotate_y_axis(random_negative*np.pi/64) 
+          o.rotate_y_axis(random_negative*np.pi/256) 
         else:
-          o.rotate_z_axis(random_negative*np.pi/64) 
+          o.rotate_z_axis(random_negative*np.pi/256) 
 
       self.render(canvas)
 
-      root.after(40, self.update, canvas)  # Update every 100 ms
+      root.after(10, self.update, canvas)  # Update every 100 ms
 
             
 if __name__ == "__main__":
