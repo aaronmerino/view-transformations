@@ -3,7 +3,7 @@ import numpy as np
 class Camera:
   # nx = picture plane's # of pixels along row
   # ny = picture plane's # of pixels along height
-  def __init__(self, nx=400, ny=400, left=100, bottom=100, near=-100, far=-400, origin=np.array([0, 0, 0, 1]), view_dir=np.array([0, 0, -1, 0])):
+  def __init__(self, nx=400, ny=400, left=200, bottom=200, near=-100, far=-400, origin=np.array([0, 0, 0, 1]), view_dir=np.array([0, 0, -1, 0])):
     self.nx = nx
     self.ny = ny
 
@@ -29,8 +29,6 @@ class Camera:
     v_cross = np.cross(self.w[:3], self.u[:3])
     v_cross = np.append(v_cross, 0)
     self.v = v_cross
-
-
 
 
     # Viewport Transformation

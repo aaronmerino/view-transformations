@@ -11,19 +11,25 @@ HEIGHT = 800
 
 class Scene:
     def __init__(self, objects: list, camera: Camera):
-       self.objects = objects
-       self.camera = camera
+      self.objects = objects
+      self.camera = camera
+
+      self.random = random.choice([1, 2, 3])
 
     def render(self, canvas):
       for o in self.objects:
-        vertices = o.render(camera)
-        for v in vertices:
-          w = v[3]
-          i = v[0]/w
-          j = v[1]/w
-          # apply pixel_color to canvas at position (i, j)
-          pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
-          canvas.create_rectangle(i-2, j-2, i+2, j+2, outline="", fill=pixel_color_hex)
+        o.render(camera, canvas)
+      
+      # for o in self.objects:
+      #   vertices = o.render(camera, canvas)
+      #   for v in vertices:
+      #     w = v[3]
+      #     i = v[0]/w
+      #     j = v[1]/w
+      #     # apply pixel_color to canvas at position (i, j)
+      #     pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
+      #     canvas.create_rectangle(i-2, j-2, i+2, j+2, outline="", fill=pixel_color_hex)
+          
 
     def update(self, canvas):
       # Clear the canvas
@@ -32,14 +38,17 @@ class Scene:
       # Update the position of the cube
       for o in self.objects:
         # Generate a random number between the smallest and largest of your numbers
-        random_num = random.choice([1, 2, 3])
-        random_negative = random.choice([1, 1, 1, 1, 1, 1, 1, 1, -1])
+        random_num = self.random
+        random_negative = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1])
         if random_num == 1:
           o.rotate_x_axis(random_negative*np.pi/256) 
+          self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
         elif random_num == 2:
           o.rotate_y_axis(random_negative*np.pi/256) 
+          self.random = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3])
         else:
           o.rotate_z_axis(random_negative*np.pi/256) 
+          self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
 
       self.render(canvas)
 
@@ -47,10 +56,20 @@ class Scene:
 
             
 if __name__ == "__main__":
-  camera = Camera(WIDTH, HEIGHT, 100, 100, -100, -400, np.array([0, 0, 0, 1]), np.array([0, 0, -1, 0]))
+  camera = Camera(WIDTH, HEIGHT, 200, 200, -100, -400, np.array([0, 0, -40, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
-  scene_objects.append(Cube(50, np.array([0, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, 0, -120, 1])))
+
+  scene_objects.append(Cube(25, np.array([100, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([-100, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, 100, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, -100, -120, 1])))
+
+  scene_objects.append(Cube(25, np.array([100/2, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, 100/2, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, -100/2, -120, 1])))
 
   scene = Scene(scene_objects, camera)
 
