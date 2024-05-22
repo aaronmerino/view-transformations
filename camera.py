@@ -56,6 +56,8 @@ class Camera:
                           [  0,     0,            1,         0]])
 
     self.M_full = np.dot(self.M_vp, np.dot(self.M_orth, np.dot(self.M_p, self.M_cam)))
+    # self.M_full = np.dot(self.M_vp, np.dot(self.M_orth, np.dot(np.eye(4), self.M_cam))) #orthographic
+    
 
   
   def getViewingTransformation(self):

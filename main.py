@@ -19,7 +19,8 @@ class Scene:
     def render(self, canvas):
       for o in self.objects:
         o.render(camera, canvas)
-      
+      # pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
+      # canvas.create_rectangle(0, 0, 10, 10, outline="", fill=pixel_color_hex)
       # for o in self.objects:
       #   vertices = o.render(camera, canvas)
       #   for v in vertices:
@@ -39,7 +40,7 @@ class Scene:
       for o in self.objects:
         # Generate a random number between the smallest and largest of your numbers
         random_num = self.random
-        random_negative = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1])
+        random_negative = random.choice([1, 1, 1, 1, -1])
         if random_num == 1:
           o.rotate_x_axis(random_negative*np.pi/256) 
           self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
@@ -49,6 +50,7 @@ class Scene:
         else:
           o.rotate_z_axis(random_negative*np.pi/256) 
           self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
+      
 
       self.render(canvas)
 
@@ -56,26 +58,49 @@ class Scene:
 
             
 if __name__ == "__main__":
-  camera = Camera(WIDTH, HEIGHT, 200, 200, -100, -400, np.array([0, 0, -40, 1]), np.array([0, 0, -1, 0]))
+  camera = Camera(WIDTH, HEIGHT, 200, 200, -100, -400, np.array([0, 0, -100, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
-  scene_objects.append(Cube(25, np.array([0, 0, -120, 1])))
+  scene_objects.append(Cube(25, np.array([0, 0, -200, 1])))
 
-  scene_objects.append(Cube(25, np.array([100, 0, -120, 1])))
-  scene_objects.append(Cube(25, np.array([-100, 0, -120, 1])))
-  scene_objects.append(Cube(25, np.array([0, 100, -120, 1])))
-  scene_objects.append(Cube(25, np.array([0, -100, -120, 1])))
+  scene_objects.append(Cube(25, np.array([100, 0, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100, 0, -200, 1])))
+  scene_objects.append(Cube(25, np.array([0, 100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([0, -100, -200, 1])))
 
-  scene_objects.append(Cube(25, np.array([100/2, 0, -120, 1])))
-  scene_objects.append(Cube(25, np.array([-100/2, 0, -120, 1])))
-  scene_objects.append(Cube(25, np.array([0, 100/2, -120, 1])))
-  scene_objects.append(Cube(25, np.array([0, -100/2, -120, 1])))
+  scene_objects.append(Cube(25, np.array([100/2, 0, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, 0, -200, 1])))
+  scene_objects.append(Cube(25, np.array([0, 100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([0, -100/2, -200, 1])))
+
+  scene_objects.append(Cube(25, np.array([100/2, 100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, 100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([100, 100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100, 100/2, -200, 1])))
+
+  scene_objects.append(Cube(25, np.array([100/2, -100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, -100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([100, -100/2, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100, -100/2, -200, 1])))
+
+
+  scene_objects.append(Cube(25, np.array([100/2, 100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, 100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([100, 100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100, 100, -200, 1])))
+
+  scene_objects.append(Cube(25, np.array([100/2, -100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100/2, -100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([100, -100, -200, 1])))
+  scene_objects.append(Cube(25, np.array([-100, -100, -200, 1])))
+
+
 
   scene = Scene(scene_objects, camera)
 
   root = Tk()
 
-  canvas = Canvas(root, width=WIDTH, height=HEIGHT)
+  canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg='#1a1f1c')
   canvas.pack(fill=BOTH, expand=1)
 
   scene.update(canvas)
