@@ -70,7 +70,7 @@ class Cube:
       behind_cam = False
 
       for vertex in e.getVertices():
-        if camera.convert_xyz_to_uvw(vertex)[2] > -100:
+        if camera.convert_xyz_to_uvw(vertex)[2] > 0:
           behind_cam = True
           break
       
