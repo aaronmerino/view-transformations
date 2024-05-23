@@ -26,7 +26,9 @@ class Scene:
       # Get currently pressed keys
       
       keyboard.start_recording()
-      currently_pressed = keyboard._pressed_events
+      currently_pressed = dict(keyboard._pressed_events)
+
+      
       
       for event in currently_pressed:
         if event == 75: # key l_arrow
