@@ -4,6 +4,7 @@ To run the program, use the following command in your terminal:
 
 ```bash
 pip install numpy
+pip install keyboard
 python main.py
 ```
 
