@@ -2,6 +2,7 @@ from camera import Camera
 from cube import Cube
 import numpy as np
 import random
+import keyboard
 
 
 from tkinter import Tk, Canvas, Frame, BOTH
@@ -19,24 +20,40 @@ class Scene:
     def render(self, canvas):
       for o in self.objects:
         o.render(camera, canvas)
-      # pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
-      # canvas.create_rectangle(0, 0, 10, 10, outline="", fill=pixel_color_hex)
-      # for o in self.objects:
-      #   vertices = o.render(camera, canvas)
-      #   for v in vertices:
-      #     w = v[3]
-      #     i = v[0]/w
-      #     j = v[1]/w
-      #     # apply pixel_color to canvas at position (i, j)
-      #     pixel_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
-      #     canvas.create_rectangle(i-2, j-2, i+2, j+2, outline="", fill=pixel_color_hex)
           
 
     def update(self, canvas):
+      # Get currently pressed keys
+      
+      keyboard.start_recording()
+      currently_pressed = keyboard._pressed_events
+      
+      for event in currently_pressed:
+        if event == 75: # key l_arrow
+          camera.rotate_y_axis(-np.pi/128)
+        if event == 77: # key r_arrow
+          camera.rotate_y_axis(np.pi/128)
+        if event == 72: # key up_arrow
+          camera.rotate_bas_u_axis(np.pi/128)
+        if event == 80: # key down_arrow
+          camera.rotate_bas_u_axis(-np.pi/128)
+
+        if event == 16: # key Q
+          camera.translate(5*camera.v)    
+        if event == 18: # key E
+          camera.translate(-5*camera.v)  
+        if event == 17: # key W
+          camera.translate(-5*camera.w)
+        if event == 30: # key A
+          camera.translate(5*camera.u)
+        if event == 31: # key S
+          camera.translate(5*camera.w)
+        if event == 32: # key D
+          camera.translate(-5*camera.u)
+      
       # Clear the canvas
       canvas.delete("all")
 
-      # Update the position of the cube
       for o in self.objects:
         # Generate a random number between the smallest and largest of your numbers
         random_num = self.random
@@ -54,11 +71,13 @@ class Scene:
 
       self.render(canvas)
 
-      root.after(10, self.update, canvas)  # Update every 100 ms
+      root.after(10, self.update, canvas)  # Update every 10 ms
+
+      keyboard.stop_recording()
 
             
 if __name__ == "__main__":
-  camera = Camera(WIDTH, HEIGHT, 200, 200, -100, -400, np.array([0, 0, -100, 1]), np.array([0, 0, -1, 0]))
+  camera = Camera(WIDTH, HEIGHT, 200, 200, -200, -4000, np.array([0, 0, -10, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
   scene_objects.append(Cube(25, np.array([0, 0, -200, 1])))
@@ -106,4 +125,6 @@ if __name__ == "__main__":
   scene.update(canvas)
 
   root.mainloop()
+
+  
 

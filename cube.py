@@ -67,6 +67,16 @@ class Cube:
     
     for e in self.edges:
       transformed_vertices = np.array([np.dot(M, vertex) for vertex in e.getVertices()])
+      behind_cam = False
+
+      for vertex in e.getVertices():
+        if camera.convert_xyz_to_uvw(vertex)[2] > -100:
+          behind_cam = True
+          break
+      
+      if behind_cam:
+        continue
+
 
       v_1 = transformed_vertices[0]
       v_2 = transformed_vertices[1]

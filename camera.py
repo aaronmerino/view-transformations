@@ -28,21 +28,34 @@ class Camera:
 
     v_cross = np.cross(self.w[:3], self.u[:3])
     v_cross = np.append(v_cross, 0)
-    self.v = v_cross
+    self.v = v_cross 
+  
+  def convert_xyz_to_uvw(self, point):
+    R_translate = np.array([  [1, 0, 0, -self.origin[0]],
+                              [0, 1, 0, -self.origin[1]],
+                              [0, 0, 1, -self.origin[2]],
+                              [0, 0, 0, 1]])
+    R_uvw = np.array([  self.u,
+                        self.v,
+                        self.w,
+                        [0, 0, 0, 1]])
+    
+    R_full = np.dot(R_uvw, R_translate)
 
-
-    # Viewport Transformation
-    self.M_vp = np.array([[nx/2,    0,   0, (nx - 1)/2],
-                          [  0,  ny/2,   0, (ny - 1)/2],
+    return np.dot(R_full, point)
+  
+  def getViewingTransformation(self):
+    M_vp = np.array([[self.nx/2,    0,   0, (self.nx - 1)/2],
+                          [  0,  self.ny/2,   0, (self.ny - 1)/2],
                           [  0,     0,   1,          0],
                           [  0,     0,   0,          1]])
   
-    self.M_orth = np.array([[2/(self.right - self.left),                             0,                          0, -1*(self.right + self.left)/(self.right - self.left)],
+    M_orth = np.array([[2/(self.right - self.left),                             0,                          0, -1*(self.right + self.left)/(self.right - self.left)],
                           [                           0,    2/(self.top - self.bottom),                          0, -1*(self.top + self.bottom)/(self.top - self.bottom)],
                           [                           0,                             0,   2/(self.near - self.far), -1*(self.near + self.far)/(self.near - self.far)],
                           [                           0,                             0,                          0,  1]])
     
-    self.M_cam = np.dot(np.array([self.u,
+    M_cam = np.dot(np.array([self.u,
                                   self.v,
                                   self.w,
                                   [  0,   0,   0, 1]]), np.array([[  1,   0,   0, -self.origin[0]],
@@ -50,15 +63,64 @@ class Camera:
                                                                   [  0,   0,   1, -self.origin[2]],
                                                                   [  0,   0,   0, 1]]))
     
-    self.M_p = np.array([[near,     0,            0,         0],
-                          [  0,  near,            0,         0],
-                          [  0,     0,   near + far, -far*near],
+    M_p = np.array([[self.near,     0,            0,         0],
+                          [  0,  self.near,            0,         0],
+                          [  0,     0,   self.near + self.far, -self.far*self.near],
                           [  0,     0,            1,         0]])
 
-    self.M_full = np.dot(self.M_vp, np.dot(self.M_orth, np.dot(self.M_p, self.M_cam)))
-    # self.M_full = np.dot(self.M_vp, np.dot(self.M_orth, np.dot(np.eye(4), self.M_cam))) #orthographic
+    return np.dot(M_vp, np.dot(M_orth, np.dot(M_p, M_cam)))
+
+  def rotate_y_axis(self, deg):
+    M_rotate_y = np.array([[np.cos(deg),    0,     np.sin(deg), 0],
+                          [           0,    1,               0, 0],
+                          [-np.sin(deg),    0,     np.cos(deg), 0],
+                          [            0,   0,               0, 1]])
+    
+    self.u = np.dot(M_rotate_y, self.u)      
+    self.v = np.dot(M_rotate_y, self.v)  
+    self.w = np.dot(M_rotate_y, self.w)  
+
+    self.u = self.u/np.linalg.norm(self.u)
+    self.v = self.v/np.linalg.norm(self.v)
+    self.w = self.w/np.linalg.norm(self.w)
+
+  def rotate_bas_u_axis(self, deg):
+    w = self.u
+    u_cross = np.cross(self.up_dir[:3], w[:3])
+    u_cross = np.append(u_cross, 0)
+
+    u = u_cross/np.linalg.norm(u_cross)
+
+    v_cross = np.cross(w[:3], u[:3])
+    v_cross = np.append(v_cross, 0)
+    v = v_cross
+  
+
+    R_uvw = np.array([  u,
+                        v,
+                        w,
+                        [0, 0, 0, 1]])
+    
+    M_rotate_z = np.array([[np.cos(deg), -np.sin(deg), 0, 0],
+                          [ np.sin(deg),  np.cos(deg), 0, 0],
+                          [           0,            0, 1, 0],
+                          [            0,           0, 0, 1]])
+    
+    M_full = np.dot(R_uvw.T, np.dot(M_rotate_z, R_uvw))
     
 
-  
-  def getViewingTransformation(self):
-    return self.M_full
+    self.u = np.dot(M_full, self.u)      
+    self.v = np.dot(M_full, self.v)  
+    self.w = np.dot(M_full, self.w)  
+
+    self.u = self.u/np.linalg.norm(self.u)
+    self.v = self.v/np.linalg.norm(self.v)
+    self.w = self.w/np.linalg.norm(self.w)
+
+  def translate(self, vector):
+    M_translate = np.array([[1, 0, 0, vector[0]],
+                            [0, 1, 0, vector[1]],
+                            [0, 0, 1, vector[2]],
+                            [0, 0, 0,       1]])
+    
+    self.origin = np.dot(M_translate, self.origin)
