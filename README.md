@@ -22,6 +22,9 @@ DOWN_arrow - look down
 LEFT_arrow - turn left
 RIGHT_arrow - turn right
 ```
+## preview
+https://github.com/aaronmerino/view-transformations/assets/35439874/49fa8bdc-c44e-4c81-9c3d-c2834c6ab7bb
+
 
 I am following this book: `
 Fundamentals of Computer Graphics -
