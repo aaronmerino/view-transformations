@@ -22,7 +22,7 @@ class Scene:
     self.random = random.choice([1, 2, 3])
 
     self.prev_mouse_x = None
-    self.control_cam = True
+    self.control_cam = False
 
     def on_click(x, y, button, pressed):
       if pressed:
@@ -52,7 +52,6 @@ class Scene:
 
         camera.rotate_y_axis(mouse_difference[0]*np.pi/1024)
         camera.rotate_bas_u_axis(-mouse_difference[1]*np.pi/1024)
-        self.prev_mouse_x = mouse.position
 
         mouse.position = (root.winfo_x() + (root.winfo_width()//2), root.winfo_y() +  (root.winfo_height()//2))
         self.prev_mouse_x = (root.winfo_x() + (root.winfo_width()//2), root.winfo_y() + (root.winfo_height()//2))
@@ -116,6 +115,8 @@ if __name__ == "__main__":
   camera = Camera(WIDTH, HEIGHT, 200, 200, -140, -4000, np.array([0, 0, -10, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
+  scene_objects.append(Cube(10000, np.array([0, 0, -20000, 1])))
+
   scene_objects.append(Cube(25, np.array([0, 0, -200, 1])))
 
   scene_objects.append(Cube(25, np.array([150, 0, -200, 1])))
@@ -157,6 +158,7 @@ if __name__ == "__main__":
   scene = Scene(scene_objects, camera)
 
   root = Tk()
+  root.config(cursor='none')
 
   canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg='#1a1f1c')
   canvas.pack(fill=BOTH, expand=1)
