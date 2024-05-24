@@ -10,6 +10,8 @@ python main.py
 
 ## controls
 ```bash
+ESC - gain back mouse control
+MOUSE_CLICK - control camera
 W - move forward
 A - move left
 S - move backward
