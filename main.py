@@ -23,16 +23,29 @@ class Scene:
 
     self.prev_mouse_x = None
     self.control_cam = False
+    self.window_focused = True
 
     def on_click(x, y, button, pressed):
+      if not self.window_focused:
+        return
+      
       if pressed:
         if root.winfo_rootx() <= x <= root.winfo_rootx() + root.winfo_width() and root.winfo_rooty() <= y <= root.winfo_rooty() + root.winfo_height():
           self.control_cam = not self.control_cam
-      # if not pressed:
-      #     self.control_cam = False
+          if not self.control_cam:
+            self.prev_mouse_x = None
 
     listener = mouse.Listener(on_click=on_click)
     listener.start()
+
+
+  def enterCamera(self):
+    self.window_focused = True
+
+  def releaseCamera(self):
+    self.window_focused = False
+    self.control_cam = False
+    self.prev_mouse_x = None
 
   def render(self, canvas):
     for o in self.objects:
@@ -112,12 +125,10 @@ class Scene:
 
             
 if __name__ == "__main__":
-  camera = Camera(WIDTH, HEIGHT, 200, 200, -140, -4000, np.array([0, 0, -10, 1]), np.array([0, 0, -1, 0]))
+  camera = Camera(WIDTH, HEIGHT, 200, 200, -140, -4000, np.array([0, 0, 300, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
-  scene_objects.append(Cube(10000, np.array([0, 0, -20000, 1])))
-
-  scene_objects.append(Cube(25, np.array([0, 0, -200, 1])))
+  scene_objects.append(Cube(1000, np.array([0, 0, -20000, 1])))
 
   scene_objects.append(Cube(25, np.array([150, 0, -200, 1])))
   scene_objects.append(Cube(25, np.array([-150, 0, -200, 1])))
@@ -136,29 +147,47 @@ if __name__ == "__main__":
 
   scene_objects.append(Cube(25, np.array([100/2, 100/2, -200, 1])))
   scene_objects.append(Cube(25, np.array([-100/2, 100/2, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([100, 100/2, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100, 100/2, -200, 1])))
 
   scene_objects.append(Cube(25, np.array([100/2, -100/2, -200, 1])))
   scene_objects.append(Cube(25, np.array([-100/2, -100/2, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([100, -100/2, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100, -100/2, -200, 1])))
 
 
-  # scene_objects.append(Cube(25, np.array([100/2, 100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100/2, 100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([100, 100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100, 100, -200, 1])))
 
-  # scene_objects.append(Cube(25, np.array([100/2, -100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100/2, -100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([100, -100, -200, 1])))
-  # scene_objects.append(Cube(25, np.array([-100, -100, -200, 1])))
 
-  scene = Scene(scene_objects, camera)
+  scene_objects.append(Cube(25, np.array([150, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([-150, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, 150, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, -150, 1])))
+
+  scene_objects.append(Cube(25, np.array([100, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([-100, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, 100, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, -100, 1])))
+
+  scene_objects.append(Cube(25, np.array([50, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([-50, -200, 0, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, 50, 1])))
+  scene_objects.append(Cube(25, np.array([0, -200, -50, 1])))
+
+  scene_objects.append(Cube(25, np.array([50, -200, 50, 1])))
+  scene_objects.append(Cube(25, np.array([-50, -200, 50, 1])))
+
+  scene_objects.append(Cube(25, np.array([50, -200, -50, 1])))
+  scene_objects.append(Cube(25, np.array([-50, -200, -50, 1])))
+
+
+
+
+
+
+  scene = Scene(scene_objects, camera) 
 
   root = Tk()
+  root.resizable(False, False)
   root.config(cursor='none')
+
+  root.bind('<FocusIn>', lambda event: scene.enterCamera())
+  root.bind('<FocusOut>', lambda event: scene.releaseCamera())
 
   canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg='#1a1f1c')
   canvas.pack(fill=BOTH, expand=1)
