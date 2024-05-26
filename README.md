@@ -1,8 +1,9 @@
 # view transformations study
 
-To run the program, use the following command in your terminal:
+To run the program, use the following command in your terminal/command prompt:
 
 ```bash
+cd "C:\PATH\TO\view-transformations"
 pip install numpy
 pip install keyboard
 pip install pynput
