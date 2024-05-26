@@ -34,7 +34,8 @@ E - move down
 ARROW_KEYS - aim camera
 ```
 ## preview
-https://github.com/aaronmerino/view-transformations/assets/35439874/49fa8bdc-c44e-4c81-9c3d-c2834c6ab7bb
+https://github.com/aaronmerino/view-transformations/assets/35439874/af6004db-a76a-4bef-a8dd-f06671066fd7
+
 
 
 I am following this book:
