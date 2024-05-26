@@ -93,7 +93,7 @@ class Cube:
 
       # canvas.create_rectangle(i_2-1, j_2-1, i_2+1, j_2+1, outline="", fill=pixel_color_hex)
       line_color_hex = "#%02x%02x%02x" % (int(min(0.5*255, 255)), int(min(0.5*255, 255)), int(min(0.5*255, 255)))
-      canvas.create_line(i_1, j_1, i_2, j_2, fill=line_color_hex)
+      canvas.create_line(i_1, j_1, i_2, j_2, fill=line_color_hex, tags='redraw')
       # print(f"({i_1}, {j_1}), ({i_2}, {j_2})!")
 
 

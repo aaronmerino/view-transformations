@@ -4,17 +4,18 @@ class Camera:
   # nx = picture plane's # of pixels along row
   # ny = picture plane's # of pixels along height
   def __init__(self, nx=400, ny=400, left=200, bottom=200, near=-100, far=-400, origin=np.array([0, 0, 0, 1]), view_dir=np.array([0, 0, -1, 0])):
-    self.nx = nx
-    self.ny = ny
+    self.orthographic = False
+    self.nx = int(nx)
+    self.ny = int(ny)
 
-    self.left = left
-    self.bottom = bottom
+    self.left = int(left)
+    self.bottom = int(bottom)
 
     self.right = -left
     self.top = -bottom
 
-    self.near = near    
-    self.far = far
+    self.near = int(near)
+    self.far = int(far)
 
     self.origin = origin    # in terms of world space
     self.view_dir = view_dir
@@ -44,6 +45,22 @@ class Camera:
 
     return np.dot(R_full, point)
   
+
+  def getOrthographicMode(self):
+    return self.orthographic
+  
+  def setOrthographicCamera(self, x=False):
+    self.orthographic = x
+
+  def getFocalLength(self):
+    return self.near
+
+  def setFocalLength(self, fl):
+    if fl >= 0:
+      return
+    
+    self.near = int(fl)
+
   def getViewingTransformation(self):
     M_vp = np.array([[self.nx/2,    0,   0, (self.nx - 1)/2],
                           [  0,  self.ny/2,   0, (self.ny - 1)/2],
@@ -68,7 +85,12 @@ class Camera:
                           [  0,     0,   self.near + self.far, -self.far*self.near],
                           [  0,     0,            1,         0]])
 
-    return np.dot(M_vp, np.dot(M_orth, np.dot(M_p, M_cam)))
+    M_full = np.dot(M_vp, np.dot(M_orth, np.dot(M_p, M_cam)))
+
+    if self.orthographic:
+      M_full = np.dot(M_vp, np.dot(M_orth, M_cam))
+
+    return M_full
 
   def rotate_y_axis(self, deg):
     M_rotate_y = np.array([[np.cos(deg),    0,     np.sin(deg), 0],

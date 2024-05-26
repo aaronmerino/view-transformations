@@ -9,10 +9,9 @@ from pynput import mouse
 
 from tkinter import Tk, Canvas, Frame, BOTH
 
-WIDTH = 800
+
+WIDTH = 1600
 HEIGHT = 800
-
-
 
 class Scene:
   def __init__(self, objects: list, camera: Camera):
@@ -23,27 +22,27 @@ class Scene:
 
     self.prev_mouse_x = None
     self.control_cam = False
-    self.window_focused = True
+    self.paused = False
 
     def on_click(x, y, button, pressed):
-      if not self.window_focused:
-        return
-      
       if pressed:
         if root.winfo_rootx() <= x <= root.winfo_rootx() + root.winfo_width() and root.winfo_rooty() <= y <= root.winfo_rooty() + root.winfo_height():
-          self.control_cam = not self.control_cam
-          if not self.control_cam:
-            self.prev_mouse_x = None
+          if self.control_cam:
+            self.releaseCamera()
+          else:
+            if root.focus_get():
+              self.enterCamera()
 
     listener = mouse.Listener(on_click=on_click)
     listener.start()
 
 
   def enterCamera(self):
-    self.window_focused = True
+    root.configure(cursor='none')
+    self.control_cam = True
 
   def releaseCamera(self):
-    self.window_focused = False
+    root.configure(cursor='arrow')
     self.control_cam = False
     self.prev_mouse_x = None
 
@@ -53,6 +52,7 @@ class Scene:
         
 
   def update(self, canvas):
+    global FOCAL_LENGTH
 
     mouse = Controller()
 
@@ -60,7 +60,7 @@ class Scene:
       self.prev_mouse_x = mouse.position
     else:
       if not (self.prev_mouse_x == mouse.position) and self.control_cam:
-        # print(np.array(mouse.position) - np.array(self.prev_mouse_x))
+        
         mouse_difference = np.array(mouse.position) - np.array(self.prev_mouse_x)
 
         camera.rotate_y_axis(mouse_difference[0]*np.pi/1024)
@@ -69,66 +69,88 @@ class Scene:
         mouse.position = (root.winfo_x() + (root.winfo_width()//2), root.winfo_y() +  (root.winfo_height()//2))
         self.prev_mouse_x = (root.winfo_x() + (root.winfo_width()//2), root.winfo_y() + (root.winfo_height()//2))
           
-    # Get currently pressed keys
     
-    keyboard.start_recording()
-    currently_pressed = dict(keyboard._pressed_events)
-    
-    for event in currently_pressed:
-      if event == 1: # esc key
-        self.control_cam = False
-      if event == 75: # key l_arrow
-        camera.rotate_y_axis(-np.pi/128)
-      if event == 77: # key r_arrow
-        camera.rotate_y_axis(np.pi/128)
-      if event == 72: # key up_arrow
-        camera.rotate_bas_u_axis(np.pi/128)
-      if event == 80: # key down_arrow
-        camera.rotate_bas_u_axis(-np.pi/128)
+    if root.focus_get():
+      keyboard.start_recording()
+      currently_pressed = dict(keyboard._pressed_events)
+      
+      for event in currently_pressed:
+        
+        if event == 1: # esc key
+          self.control_cam = False
+        if event == 2: # 1 key
+          self.paused = False
+        if event == 3: # 2 key
+          self.paused = True
+        if event == 4: # 3 key
+          self.camera.setFocalLength(self.camera.getFocalLength() + 1)
+        if event == 5: # 4 key
+          self.camera.setFocalLength(self.camera.getFocalLength() - 1)
+        if event == 6: # 5 key
+          self.camera.setOrthographicCamera(True)
+        if event == 7: # 6 key
+          self.camera.setOrthographicCamera(False)
 
-      if event == 16: # key Q
-        camera.translate(5*camera.v)    
-      if event == 18: # key E
-        camera.translate(-5*camera.v)  
-      if event == 17: # key W
-        camera.translate(-5*camera.w)
-      if event == 30: # key A
-        camera.translate(5*camera.u)
-      if event == 31: # key S
-        camera.translate(5*camera.w)
-      if event == 32: # key D
-        camera.translate(-5*camera.u)
+
+        if event == 75: # key l_arrow
+          camera.rotate_y_axis(-np.pi/256)
+        if event == 77: # key r_arrow
+          camera.rotate_y_axis(np.pi/256)
+        if event == 72: # key up_arrow
+          camera.rotate_bas_u_axis(np.pi/256)
+        if event == 80: # key down_arrow
+          camera.rotate_bas_u_axis(-np.pi/256)
+
+        if event == 16: # key Q
+          camera.translate(2*camera.v)    
+        if event == 18: # key E
+          camera.translate(-2*camera.v)  
+        if event == 17: # key W
+          camera.translate(-2*camera.w)
+        if event == 30: # key A
+          camera.translate(2*camera.u)
+        if event == 31: # key S
+          camera.translate(2*camera.w)
+        if event == 32: # key D
+          camera.translate(-2*camera.u)
+
+      keyboard.stop_recording()
     
     # Clear the canvas
-    canvas.delete("all")
+    canvas.delete("redraw")
 
-    for o in self.objects:
-      # Generate a random number between the smallest and largest of your numbers
-      random_num = self.random
-      random_negative = random.choice([1, 1, 1, 1, -1])
-      if random_num == 1:
-        o.rotate_x_axis(random_negative*np.pi/256) 
-        self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
-      elif random_num == 2:
-        o.rotate_y_axis(random_negative*np.pi/256) 
-        self.random = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3])
-      else:
-        o.rotate_z_axis(random_negative*np.pi/256) 
-        self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
+    if not self.paused:
+      for o in self.objects:
+        # Generate a random number between the smallest and largest of your numbers
+        random_num = self.random
+        random_negative = random.choice([1, 1, 1, 1, -1])
+        if random_num == 1:
+          o.rotate_x_axis(random_negative*np.pi/256) 
+          self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
+        elif random_num == 2:
+          o.rotate_y_axis(random_negative*np.pi/256) 
+          self.random = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3])
+        else:
+          o.rotate_z_axis(random_negative*np.pi/256) 
+          self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
     
+    canvas.create_text(10, HEIGHT-30, text=f'focal length: {-self.camera.getFocalLength()}', fill="white", font=("Monaco", 8), anchor="nw", tag="redraw")
+    canvas.create_text(10, HEIGHT-20, text=f'orthographic mode: {self.camera.getOrthographicMode()}', fill="#ff2500" if self.camera.getOrthographicMode() else "white", font=("Monaco", 8), anchor="nw", tag="redraw")
 
     self.render(canvas)
 
     root.after(1, self.update, canvas)  # Update every 10 ms
 
-    keyboard.stop_recording()
+    
 
             
 if __name__ == "__main__":
-  camera = Camera(WIDTH, HEIGHT, 200, 200, -140, -4000, np.array([0, 0, 300, 1]), np.array([0, 0, -1, 0]))
+
+
+  camera = Camera(WIDTH, HEIGHT, WIDTH/2, HEIGHT/2, -300, -4000, np.array([0, 0, 300, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
-  scene_objects.append(Cube(1000, np.array([0, 0, -20000, 1])))
+  # scene_objects.append(Cube(1000, np.array([0, 0, -20000, 1])))
 
   scene_objects.append(Cube(25, np.array([150, 0, -200, 1])))
   scene_objects.append(Cube(25, np.array([-150, 0, -200, 1])))
@@ -184,13 +206,36 @@ if __name__ == "__main__":
 
   root = Tk()
   root.resizable(False, False)
-  root.config(cursor='none')
 
-  root.bind('<FocusIn>', lambda event: scene.enterCamera())
   root.bind('<FocusOut>', lambda event: scene.releaseCamera())
 
   canvas = Canvas(root, width=WIDTH, height=HEIGHT, bg='#1a1f1c')
   canvas.pack(fill=BOTH, expand=1)
+  # List of controls
+  controls = [
+      "ESC - gain back mouse control",
+      "MOUSE_CLICK - control camera",
+      "1 - cubes move",
+      "2 - cubes don't move",
+      "3 - decrease focal length",
+      "4 - increase focal length",
+      "5 - set orthographic mode on",
+      "6 - set orthographic mode off",
+      "W - move forward",
+      "A - move left",
+      "S - move backward",
+      "D - move right",
+      "Q - move up",
+      "E - move down",
+      "UP_ARROW - look up",
+      "DOWN_ARROW - look down",
+      "LEFT_ARROW - turn left",
+      "RIGHT_ARROW - turn right"
+  ]
+
+  # Add each control as a separate line of text
+  for i, control in enumerate(controls):
+      canvas.create_text(10, 10 + i * 20, text=control, fill="white", font=("Monaco", 8), anchor="nw")
 
   scene.update(canvas)
 
