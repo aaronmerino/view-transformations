@@ -9,11 +9,7 @@ class Cube:
 
     # the homogeneus coordinate is 0 since these are vectors
     # basis vectors
-    self.bas_x = np.array([1, 0, 0, 0])      # in terms of world space
-    self.bas_y = np.array([0, 1, 0, 0])
-    self.bas_z = np.array([0, 0, 1, 0])
-
-    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+    self.basis = np.array([np.array([1, 0, 0, 0]) , np.array([0, 1, 0, 0]), np.array([0, 0, 1, 0])])
 
     self.vertices = self._define_vertices()
     self.edges = self._define_edges()
@@ -96,6 +92,11 @@ class Cube:
       canvas.create_line(i_1, j_1, i_2, j_2, fill=line_color_hex, tags='redraw')
       # print(f"({i_1}, {j_1}), ({i_2}, {j_2})!")
 
+  def setBasis(self, basis):
+    self.basis = basis
+    
+    self.vertices = self._define_vertices()
+    self.edges = self._define_edges()
 
   def rotate_x_axis(self, deg):
     M_rotate_x = np.array([[1,            0,            0, 0],
@@ -103,11 +104,11 @@ class Cube:
                           [ 0,  np.sin(deg),  np.cos(deg), 0],
                           [ 0,            0,            0, 1]])
     
-    self.bas_x = np.dot(M_rotate_x, self.basis[0])      
-    self.bas_y = np.dot(M_rotate_x, self.basis[1])  
-    self.bas_z = np.dot(M_rotate_x, self.basis[2])  
+    bas_x = np.dot(M_rotate_x, self.basis[0])      
+    bas_y = np.dot(M_rotate_x, self.basis[1])  
+    bas_z = np.dot(M_rotate_x, self.basis[2])  
 
-    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+    self.basis = np.array([bas_x, bas_y, bas_z])
 
     self.vertices = self._define_vertices()
     self.edges = self._define_edges()
@@ -118,11 +119,11 @@ class Cube:
                           [-np.sin(deg),    0,     np.cos(deg), 0],
                           [            0,   0,               0, 1]])
     
-    self.bas_x = np.dot(M_rotate_y, self.basis[0])      
-    self.bas_y = np.dot(M_rotate_y, self.basis[1])  
-    self.bas_z = np.dot(M_rotate_y, self.basis[2])  
+    bas_x = np.dot(M_rotate_y, self.basis[0])      
+    bas_y = np.dot(M_rotate_y, self.basis[1])  
+    bas_z = np.dot(M_rotate_y, self.basis[2])  
 
-    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+    self.basis = np.array([bas_x, bas_y, bas_z])
 
     self.vertices = self._define_vertices()
     self.edges = self._define_edges()
@@ -133,11 +134,11 @@ class Cube:
                           [           0,            0, 1, 0],
                           [            0,           0, 0, 1]])
     
-    self.bas_x = np.dot(M_rotate_z, self.basis[0])      
-    self.bas_y = np.dot(M_rotate_z, self.basis[1])  
-    self.bas_z = np.dot(M_rotate_z, self.basis[2])  
+    bas_x = np.dot(M_rotate_z, self.basis[0])      
+    bas_y = np.dot(M_rotate_z, self.basis[1])  
+    bas_z = np.dot(M_rotate_z, self.basis[2])  
 
-    self.basis = np.array([self.bas_x, self.bas_y, self.bas_z])
+    self.basis = np.array([bas_x, bas_y, bas_z])
 
     self.vertices = self._define_vertices()
     self.edges = self._define_edges()

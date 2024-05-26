@@ -24,6 +24,8 @@ class Scene:
     self.control_cam = False
     self.paused = False
 
+    self.box_rotation_mode = 'RANDOM'
+
     def on_click(x, y, button, pressed):
       if pressed:
         if root.winfo_rootx() <= x <= root.winfo_rootx() + root.winfo_width() and root.winfo_rooty() <= y <= root.winfo_rooty() + root.winfo_height():
@@ -75,22 +77,38 @@ class Scene:
       currently_pressed = dict(keyboard._pressed_events)
       
       for event in currently_pressed:
-        
+        print(event)
         if event == 1: # esc key
           self.control_cam = False
         if event == 2: # 1 key
-          self.paused = False
-        if event == 3: # 2 key
-          self.paused = True
-        if event == 4: # 3 key
           self.camera.setFocalLength(self.camera.getFocalLength() + 1)
-        if event == 5: # 4 key
+        if event == 3: # 2 key
           self.camera.setFocalLength(self.camera.getFocalLength() - 1)
-        if event == 6: # 5 key
+        if event == 4: # 3 key
           self.camera.setOrthographicCamera(True)
-        if event == 7: # 6 key
+        if event == 5: # 4 key
           self.camera.setOrthographicCamera(False)
-
+        
+        if event == 19: # r key
+          self.paused = False
+        if event == 20: # t key
+          self.paused = True
+        if event == 21: # y key
+          self.paused = True
+          for o in self.objects:
+            o.setBasis(np.array([np.array([1, 0, 0, 0]) , np.array([0, 1, 0, 0]), np.array([0, 0, 1, 0])]))
+        if event == 22: # u key
+          self.box_rotation_mode = 'RANDOM'
+          self.paused = False
+        if event == 23: # i key
+          self.box_rotation_mode = 'X-AXIS'
+          self.paused = False
+        if event == 24: # o key
+          self.box_rotation_mode = 'Y-AXIS'
+          self.paused = False
+        if event == 25: # p key
+          self.box_rotation_mode = 'Z-AXIS'
+          self.paused = False
 
         if event == 75: # key l_arrow
           camera.rotate_y_axis(-np.pi/256)
@@ -121,18 +139,25 @@ class Scene:
 
     if not self.paused:
       for o in self.objects:
-        # Generate a random number between the smallest and largest of your numbers
-        random_num = self.random
-        random_negative = random.choice([1, 1, 1, 1, -1])
-        if random_num == 1:
-          o.rotate_x_axis(random_negative*np.pi/256) 
-          self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
-        elif random_num == 2:
-          o.rotate_y_axis(random_negative*np.pi/256) 
-          self.random = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3])
-        else:
-          o.rotate_z_axis(random_negative*np.pi/256) 
-          self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
+        if self.box_rotation_mode == 'RANDOM':
+          random_num = self.random
+          random_negative = random.choice([1, 1, 1, 1, -1])
+          if random_num == 1:
+            o.rotate_x_axis(random_negative*np.pi/256) 
+            self.random = random.choice([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3])
+          elif random_num == 2:
+            o.rotate_y_axis(random_negative*np.pi/256) 
+            self.random = random.choice([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3])
+          else:
+            o.rotate_z_axis(random_negative*np.pi/256) 
+            self.random = random.choice([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1])
+        elif self.box_rotation_mode == 'X-AXIS':
+          o.rotate_x_axis(np.pi/256) 
+        elif self.box_rotation_mode == 'Y-AXIS':
+          o.rotate_y_axis(np.pi/256) 
+        elif self.box_rotation_mode == 'Z-AXIS':
+          o.rotate_z_axis(np.pi/256) 
+        
     
     canvas.create_text(10, HEIGHT-30, text=f'focal length: {-self.camera.getFocalLength()}', fill="white", font=("Monaco", 8), anchor="nw", tag="redraw")
     canvas.create_text(10, HEIGHT-20, text=f'orthographic mode: {self.camera.getOrthographicMode()}', fill="#ff2500" if self.camera.getOrthographicMode() else "white", font=("Monaco", 8), anchor="nw", tag="redraw")
@@ -147,10 +172,12 @@ class Scene:
 if __name__ == "__main__":
 
 
-  camera = Camera(WIDTH, HEIGHT, WIDTH/2, HEIGHT/2, -300, -4000, np.array([0, 0, 300, 1]), np.array([0, 0, -1, 0]))
+  camera = Camera(WIDTH, HEIGHT, WIDTH/2, HEIGHT/2, -300, -4000, np.array([0, 0, 200, 1]), np.array([0, 0, -1, 0]))
 
   scene_objects = []
   # scene_objects.append(Cube(1000, np.array([0, 0, -20000, 1])))
+
+  scene_objects.append(Cube(25, np.array([0, 0, -200, 1])))
 
   scene_objects.append(Cube(25, np.array([150, 0, -200, 1])))
   scene_objects.append(Cube(25, np.array([-150, 0, -200, 1])))
@@ -175,6 +202,7 @@ if __name__ == "__main__":
 
 
 
+  scene_objects.append(Cube(25, np.array([0, -200, 0, 1])))
 
   scene_objects.append(Cube(25, np.array([150, -200, 0, 1])))
   scene_objects.append(Cube(25, np.array([-150, -200, 0, 1])))
@@ -214,23 +242,26 @@ if __name__ == "__main__":
   # List of controls
   controls = [
       "ESC - gain back mouse control",
-      "MOUSE_CLICK - control camera",
-      "1 - cubes move",
-      "2 - cubes don't move",
-      "3 - decrease focal length",
-      "4 - increase focal length",
-      "5 - set orthographic mode on",
-      "6 - set orthographic mode off",
+      "CLICK - toggle mouse camera control",
+      "R - resume cube rotation",
+      "T - pause cube rotation",
+      "Y - cubes reset rotation",
+      "U - cubes random rotation",
+      "I - cubes rotate in x-axis",
+      "O - cubes rotate in y-axis",
+      "P - cubes rotate in z-axis",
+
+      "1 - decrease focal length",
+      "2 - increase focal length",
+      "3 - set orthographic mode on",
+      "4 - set orthographic mode off",
       "W - move forward",
       "A - move left",
       "S - move backward",
       "D - move right",
       "Q - move up",
       "E - move down",
-      "UP_ARROW - look up",
-      "DOWN_ARROW - look down",
-      "LEFT_ARROW - turn left",
-      "RIGHT_ARROW - turn right"
+      "ARROW_KEYS - aim camera"
   ]
 
   # Add each control as a separate line of text
